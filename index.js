@@ -4,6 +4,7 @@ var bparse = require('body-parser');
 var mongoose = require('mongoose');
 var session = require('express-session');
 var multer = require('multer');
+var mysql = require('mysql');
 
 var app = express();
 
@@ -19,34 +20,21 @@ app.set('view engine', 'handlebars');
 app.use(bparse.urlencoded({ extended: false }));
 app.use(bparse.json());
 
-// Mongoose database
-mongoose.connect('mongodb://127.0.0.1/usersystem');
-var db = mongoose.connection;
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', function() {
-    console.log('LOGGED | MongoDB Connected - ' + new Date());
+// MySQL
+var connection = mysql.createConnection({ 
+    host : 'localhost', 
+    user : 'root', 
+    password : '', 
+    database : 'clouddb' 
+}); 
+connection.connect(function(err){ 
+    if(!err) { 
+        console.log("Mysql Database is connected ... "); 
+    } 
+    else { 
+        console.log("Error connecting database ... "); 
+    } 
 });
-
-// Models
-// User Collection
-var UserSchema = mongoose.Schema({
-    name: String,
-    uname: String,
-    pass: String,
-    email: String,
-    conf: String
-});
-
-var User = mongoose.model('users', UserSchema);
-
-// Data Collection
-var DataSchema = mongoose.Schema({
-	name:String,
-	fname:String,
-    size:Number
-});
-
-var Data = mongoose.model('datas', DataSchema);
 
 // Session
 app.use(session({
@@ -81,6 +69,9 @@ var multipartUpload = multer({storage: multer.diskStorage({
 // HomePage
 routerPublic.get('/', function (req, res) {
     // var x = req.session.user;
+    connection.query('select * from user',function(err,row,feild){
+        console.log(row);
+    });
     if(req.session.user)
 	    res.render('home',{name:req.session.user.name});
     else
@@ -94,14 +85,14 @@ routerPublic.get('/signup', function (req, res) {
 
 // Signup DB Post
 routerPublic.post('/signup', function (req, res, next) {
-    var newUser = new User({
+    var newUser = {
         name:req.body.name,
         email: req.body.email,
         pass: req.body.password,
         conf: req.body.confirm
-    });
+    };
     console.log(newUser);
-    newUser.save();
+    connection.query('insert into user set ?',newUser);
     // console.log(userId);
     res.redirect('/login');
 });
@@ -116,22 +107,22 @@ routerPublic.get('/login', function (req, res) {
 
 // Login validation
 routerPublic.post('/login', function(req, res) {
-    User.findOne({name : req.body.name},(error, document) => {
+    connection.query('select * from user where name = ?',req.body.name,(error, document) => {
         if (error) {
             throw error;
         }
         else {
-            if (!document) {
+            if (!document[0]) {
                 res.render('login',{msgu:req.query});
                 /*res.redirect('/login/?message='+message);*/
             }
             else {
-                if (document.pass != req.body.password) {
+                if (document[0].pass != req.body.password) {
                     // res.redirect('/login/?message='+encodeURIComponent(message));
                     res.render('login',{msgup:req.query});
                 }
                 else {
-                    req.session.user = document;
+                    req.session.user = document[0];
                     res.render('login',{msgs:req.query,name:req.session.user.name});
                 }
             }
@@ -157,38 +148,37 @@ routerLoggedin.get('/upload', function (req, res) {
 routerLoggedin.post('/upload',multipartUpload,function(req,res) {
     var arr = [],sizeinmb;
     var nam = req.session.user.name;
+    sizeinmb = req.file.size;
     // sizeinmb=req.file.size/1024000;
-    Data.find({name:nam},(error,document) => {
-        console.log(document.length);
-        if(document.length<=5)
-        {
-            User.findOne({name: nam},(error, document) => {
-                if (error) {
-                    throw error;
-                }
-                else {
-                    var x = new Data({
-                        name:nam,
-                        fname:req.body.upfile.fname
-                        // size:sizeinmb
-                    });
-                    x.save();
-                    console.log(x);
-                }
-            });
+    connection.query('select * from data where name = ? group by name having count(fname)<5',req.session.user.name,(error,document) => {
+        if (error) {
+            res.render('upload',{max:error});
+        }
+        else {
+            var x = {
+                name:nam,
+                fname:req.file.originalname,
+                size:sizeinmb,
+                type:req.file.mimetype
+            };
+            connection.query('insert into data set ?',x);
+            console.log(x);
             res.redirect('/download');
         }
-        else
-        {
-            var s = "Max file limit crossed!";
-            res.render('upload',{max:s,name:nam});
-        }
-    });  
+        
+        // else
+        // {
+        //     var s = "Max file limit crossed!";
+        //     res.render('upload',{max:s,name:nam});
+        // }
+    });
+
 });
 
 //Download page
 routerLoggedin.get('/download', function (req, res) {
-        Data.find({name: req.session.user.name}, (error, document) => {
+        connection.query('select fname from data where name = ?',req.session.user.name, (error, document) => {
+            console.log(document);
             if (error) {
                 throw error;
             }
@@ -202,12 +192,12 @@ routerLoggedin.get('/download', function (req, res) {
         });
 });
 routerLoggedin.post('/download', function (req, res) {
-    Data.findOne({name: req.session.user.name,fname: req.body.dload}, (error, document) => {
+    connection.query('select * from data where name = ? and fname = ?',[req.session.user.name,req.body.dload], (error, document) => {
         if (error) {
             throw error;
         }
         else {
-            var path = './uploads/' + document.fname;
+            var path = './uploads/' + document[0].fname;
             res.download(path);
         }
     });
