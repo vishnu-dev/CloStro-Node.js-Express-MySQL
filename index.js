@@ -107,33 +107,40 @@ routerPublic.get('/login', function (req, res) {
 
 // Login validation
 routerPublic.post('/login', function(req, res) {
-    connection.query('select * from user where name = ?',req.body.name,(error, document) => {
+    connection.query('select * from user where email = ?',req.body.email,(error, document) => {
         if (error) {
             throw error;
         }
         else {
             if (!document[0]) {
-                res.render('login',{msgu:req.query});
+                res.render('home',{msgu:req.query});
                 /*res.redirect('/login/?message='+message);*/
             }
             else {
                 if (document[0].pass != req.body.password) {
                     // res.redirect('/login/?message='+encodeURIComponent(message));
-                    res.render('login',{msgup:req.query});
+                    res.render('home',{msgup:req.query});
                 }
                 else {
                     req.session.user = document[0];
-                    res.render('login',{msgs:req.query,name:req.session.user.name});
+                    res.render('home',{msgs:req.query,name:req.session.user.name});
                 }
             }
         }
     });
 });
 
-// About
-routerLoggedin.get('/about', function (req, res) {
-    if(req.session.user)
-        res.render('about',{name:req.session.user.name});
+// Allfiles
+routerLoggedin.get('/allfiles', function (req, res) {
+    var arr = [];
+    if(req.session.user){
+        connection.query('select * from data',(error,document) => {
+            for(i=0;i<document.length;i++){
+                arr.push({name:document[i].name,fname:document[i].fname,size:document[i].size/1024,type:document[i].type});
+            }
+        });
+        res.render('allfiles',{name:req.session.user.name,files:arr});
+    }
 });
 
 // Upload page
@@ -165,19 +172,13 @@ routerLoggedin.post('/upload',multipartUpload,function(req,res) {
             console.log(x);
             res.redirect('/download');
         }
-        
-        // else
-        // {
-        //     var s = "Max file limit crossed!";
-        //     res.render('upload',{max:s,name:nam});
-        // }
     });
 
 });
 
 //Download page
 routerLoggedin.get('/download', function (req, res) {
-        connection.query('select fname from data where name = ?',req.session.user.name, (error, document) => {
+        connection.query('select * from data where name = ?',req.session.user.name, (error, document) => {
             console.log(document);
             if (error) {
                 throw error;
@@ -185,8 +186,9 @@ routerLoggedin.get('/download', function (req, res) {
             else {
             		var arr = [],i;
                     for(i=0;i<document.length;i++){
-                    	arr.push(document[i].fname);
+                    	arr.push({name:document[i].fname,size:document[i].size/1000});
                     }
+                    console.log(arr);
                     res.render('download',{files:arr,name:req.session.user.name});
             }
         });

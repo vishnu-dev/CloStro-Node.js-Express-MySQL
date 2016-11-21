@@ -1,0 +1,92 @@
+<center>
+    <h4>All Downloads</h4><br>
+</center>
+{{#if files}}
+    <center>
+    <input type="text" id="n1" oninput="n1()" placeholder="Search for names..">
+    <input type="text" id="n2" oninput="n2()" placeholder="Search for owner">
+    <input type="text" id="n3" oninput="n3()" placeholder="Search for file type">
+    <br><br>
+    <table id="myTable" style="width: auto !important;" class="table table-inverse table-bordered ">
+        <thead>
+            <tr class="bg-success">
+                <th>Download File</th>
+                <th>Owner</th>
+                <th>Type</th>
+                <th>Size in KB</th>
+            </tr>
+        </thead>
+        <tbody>
+    {{#each files}}
+		<form style="display:inline-block"  method="post" action="/download">
+            <tr>
+                <td class="bg-info"><input class="btn btn-success" name="dload" type="submit" value="{{this.fname}}"></td>
+                <td class="bg-info">{{this.name}}</td>
+                <td class="bg-info">{{this.type}}</td>
+                <td class="bg-info">{{this.size}}</td>
+            </tr>
+		</form>
+    {{/each}}
+        <tbody>
+    </table>
+    </center>
+    <script>
+function n1() {
+
+  var input, filter, table, tr, td, i;
+  input = document.getElementById("n1");
+  filter = input.value.toUpperCase();
+  table = document.getElementById("myTable");
+  tr = table.getElementsByTagName("tr");
+
+  for (i = 0; i < tr.length; i++) {
+    td = tr[i].getElementsByTagName("td")[0];
+    if (td) {
+      if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+        tr[i].style.display = "";
+      } else {
+        tr[i].style.display = "none";
+      }
+    } 
+  }
+}
+function n2() {
+
+  var input, filter, table, tr, td, i;
+  input = document.getElementById("n2");
+  filter = input.value.toUpperCase();
+  table = document.getElementById("myTable");
+  tr = table.getElementsByTagName("tr");
+
+  for (i = 0; i < tr.length; i++) {
+    td = tr[i].getElementsByTagName("td")[1];
+    if (td) {
+      if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+        tr[i].style.display = "";
+      } else {
+        tr[i].style.display = "none";
+      }
+    } 
+  }
+}
+function n3() {
+
+  var input, filter, table, tr, td, i;
+  input = document.getElementById("n3");
+  filter = input.value.toUpperCase();
+  table = document.getElementById("myTable");
+  tr = table.getElementsByTagName("tr");
+
+  for (i = 0; i < tr.length; i++) {
+    td = tr[i].getElementsByTagName("td")[2];
+    if (td) {
+      if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+        tr[i].style.display = "";
+      } else {
+        tr[i].style.display = "none";
+      }
+    } 
+  }
+}
+</script>
+{{/if}}

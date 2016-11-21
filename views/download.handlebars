@@ -2,12 +2,26 @@
     <center>
         <h4>Your Downloads</h4><br>
     </center>
+    <center>
+    <table style="width: auto !important;" class="table table-inverse table-bordered ">
+        <thead>
+            <tr class="bg-success">
+                <th>Download File</th>
+                <th>Size in KB</th>
+            </tr>
+        </thead>
+        <tbody>
     {{#each files}}
-    	<br><br>
 		<form style="display:inline-block"  method="post" action="/download">
-			<input class="btn btn-success" name="dload" type="submit" value="{{this}}">
+            <tr>
+                <td class="bg-info"><input class="btn btn-success" name="dload" type="submit" value="{{this.name}}"></td>
+                <td class="bg-info">{{this.size}}</td>
+            </tr>
 		</form>
     {{/each}}
+        <tbody>
+    </table>
+    </center>
 {{else}}
     <div class="container">
         <h4>Please upload a file!</h4>
