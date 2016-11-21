@@ -1,0 +1,9 @@
+<h1>Upload your file</h1>
+<br>
+<form method="post" enctype="multipart/form-data" action="/upload">
+    <input class="btn btn-primary" type="file" name="upfile"><br>
+	<button class="btn btn-success" type="submit">Upload File</button>
+	{{#if max}}
+		<h3>{{max}}</h3>
+	{{/if}}
+</form>

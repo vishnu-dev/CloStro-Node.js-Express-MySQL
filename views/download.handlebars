@@ -1,0 +1,16 @@
+{{#if files}}
+    <center>
+        <h4>Your Downloads</h4><br>
+    </center>
+    {{#each files}}
+    	<br><br>
+		<form style="display:inline-block"  method="post" action="/download">
+			<input class="btn btn-success" name="dload" type="submit" value="{{this}}">
+		</form>
+    {{/each}}
+{{else}}
+    <div class="container">
+        <h4>Please upload a file!</h4>
+        <h5>Upload <a href="/upload">here</a>!</h5>
+    </div>
+{{/if}}
