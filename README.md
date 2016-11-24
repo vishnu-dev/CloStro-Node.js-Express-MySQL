@@ -22,3 +22,7 @@
 ● Download any of your files
 ● Download shared public files
 ● Request for a file publically
+
+
+## Screenshot
+![alt tag](Screenshots/Cloud storage.png)
