@@ -1,0 +1,14 @@
+<div class="text-center"><h2>All Requests</h2></div>
+{{#if allreq}}
+    {{#each allreq}}
+        <div class="container" style="width: 50%">
+
+            <div class="panel panel-info">
+            <div class="panel-heading">{{this.name}}</div>
+                <div class="panel-body">{{this.text}}</div>
+            </div>
+        </div>
+    {{/each}}
+{{else}}
+<h2>No tweets yet!</h2>    
+{{/if}}

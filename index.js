@@ -1,7 +1,6 @@
 var express = require('express');
 var exphbs  = require('express-handlebars');
 var bparse = require('body-parser');
-var mongoose = require('mongoose');
 var session = require('express-session');
 var multer = require('multer');
 var mysql = require('mysql');
@@ -46,6 +45,7 @@ app.use(session({
 // Routers
 var routerPublic = express.Router();
 var routerLoggedin = express.Router();
+var routeradmin = express.Router();
 
 // Middlewares
 routerPublic.use(function (req, res, next) {
@@ -68,10 +68,6 @@ var multipartUpload = multer({storage: multer.diskStorage({
 // Routes
 // HomePage
 routerPublic.get('/', function (req, res) {
-    // var x = req.session.user;
-    connection.query('select * from user',function(err,row,feild){
-        console.log(row);
-    });
     if(req.session.user)
 	    res.render('home',{name:req.session.user.name});
     else
@@ -95,6 +91,20 @@ routerPublic.post('/signup', function (req, res, next) {
     connection.query('insert into user set ?',newUser);
     // console.log(userId);
     res.redirect('/login');
+});
+
+// Admin page
+routerPublic.get('/admin', function (req, res) {
+    res.render('admin');
+});
+routerPublic.post('/admin', function (req, res) {
+    if(req.body.name=='admin' && req.body.password=='admin'){
+        res.render('activate');
+    }
+});
+// Activate
+routeradmin.get('/activate', function (req,res) {
+    res.render('activate');
 });
 
 // Login Page
@@ -195,6 +205,7 @@ routerLoggedin.get('/download', function (req, res) {
 });
 routerLoggedin.post('/download', function (req, res) {
     connection.query('select * from data where name = ? and fname = ?',[req.session.user.name,req.body.dload], (error, document) => {
+        console.log(document);
         if (error) {
             throw error;
         }
@@ -205,6 +216,48 @@ routerLoggedin.post('/download', function (req, res) {
     });
 });
 
+// Request for a file
+routerLoggedin.get('/request', function (req,res) {
+    res.render('request',{name:req.session.user.name});
+});
+routerLoggedin.post('/request', function (req,res) {
+    var nam = req.session.user.name;
+    var date = Date();
+    connection.query('select * from user where name = ?',req.session.user.name,(error, document) => {
+        if (error) {
+            throw error;
+        }
+        else {
+            var x = {
+                name:document[0].name,
+                text:req.body.text,
+                time:date
+            };
+            connection.query('insert into request set ?',x);
+            res.redirect('/');
+        }
+    });
+});
+
+// all requests
+routerLoggedin.get('/requests', function (req, res) {
+    // var x = req.session.user;
+    if(req.session.user.name) {
+        connection.query('select * from request',(error, document) => {
+            if (error) {
+                throw error;
+            }
+            else {
+                var allarr = [], i;
+                console.log(document);
+                for (i = 0; i < document.length; i++) {
+                    allarr.push({name:document[i].name,text:document[i].text});
+                }
+                res.render('requests', {name:req.session.user.name,allreq: allarr.reverse()});
+            }
+        });
+    }
+});
 
 // Logout
 routerLoggedin.get('/logout', function (req, res) {
@@ -214,3 +267,4 @@ routerLoggedin.get('/logout', function (req, res) {
 });
 app.use(routerPublic);
 app.use(routerLoggedin);
+app.use(routeradmin);
