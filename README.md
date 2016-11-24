@@ -26,3 +26,6 @@
 
 ## Screenshot
 ![alt tag](Screenshots/Cloud storage.png)
+![alt tag](Screenshots/Cloud storage-signup.png)
+![alt tag](Screenshots/Cloud storage-alldloads.png)
+![alt tag](Screenshots/Cloud storage-upload.png)
