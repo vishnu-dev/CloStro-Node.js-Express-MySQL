@@ -1,6 +1,6 @@
 # CloStro-Node.js-Express-MySQL
  This is a responsive website which provides file storage facilities.
-##Packages Used
+ ## Packages Used
 1. Nodemon
 2. Express
 3. Express-Handlebars
@@ -9,23 +9,23 @@
 6. Multer
 7. MySQL
 
-##Setup
+## Setup
 1. Install node - https://nodejs.org/en/download/
 2. Install npm modules - npm install
 3. Install global modules - npm install -g nodemon
 4. Run node server - npm start
 5. Visit localhost:3000 for viewing the website locally.
 
-##Features
-● Login/Register
-● Upload a file
-● Download any of your files
-● Download shared public files
-● Request for a file publically
+## Features
+* Login/Register
+* Upload a file
+* Download any of your files
+* Download shared public files
+* Request for a file publically
 
 
 ## Screenshot
-![alt tag](Screenshots/Cloud storage.png)
-![alt tag](Screenshots/Cloud storage-signup.png)
-![alt tag](Screenshots/Cloud storage-alldloads.png)
-![alt tag](Screenshots/Cloud storage-upload.png)
+![image](/Screenshots/Cloud storage.png)
+![image](/Screenshots/Cloud storage-signup.png)
+![image](/Screenshots/Cloud storage-alldloads.png)
+![image](/Screenshots/Cloud storage-upload.png)
