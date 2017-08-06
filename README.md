@@ -11,9 +11,9 @@
 
 ## Setup
 1. Install node - https://nodejs.org/en/download/
-2. Install npm modules - npm install
-3. Install global modules - npm install -g nodemon
-4. Run node server - npm start
+2. Install npm modules - ```npm install```
+3. Install global modules - ```npm install -g nodemon```
+4. Run node server - ```npm start```
 5. Visit localhost:3000 for viewing the website locally.
 
 ## Features
@@ -25,7 +25,7 @@
 
 
 ## Screenshot
-![image](/Screenshots/Cloud storage.png)
-![image](/Screenshots/Cloud storage-signup.png)
-![image](/Screenshots/Cloud storage-alldloads.png)
-![image](/Screenshots/Cloud storage-upload.png)
+![image](/Screenshots/Cloud-storage.png)
+![image](/Screenshots/Cloud-storage-signup.png)
+![image](/Screenshots/Cloud-storage-alldloads.png)
+![image](/Screenshots/Cloud-storage-upload.png)
